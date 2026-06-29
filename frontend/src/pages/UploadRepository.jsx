@@ -4,6 +4,40 @@ function UploadRepository() {
   const [githubUrl, setGithubUrl] = useState("");
   const [file, setFile] = useState(null);
 
+  const handleUpload = async () => {
+
+    if (!file) {
+      alert("Please select a ZIP file.");
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    try {
+
+      const response = await fetch("http://127.0.0.1:5000/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      alert(data.message);
+
+      console.log(data);
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("Upload Failed");
+
+    }
+
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4">
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-lg p-8">
@@ -59,7 +93,7 @@ function UploadRepository() {
         </div>
 
         {/* Button */}
-        <button
+        <button onClick={handleUpload}
           className="w-full mt-8 bg-[#2e3d4c] text-white py-3 rounded-lg text-lg font-semibold hover:bg-[#425466] transition"
         >
           Start Security Review
