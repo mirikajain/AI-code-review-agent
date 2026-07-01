@@ -37,10 +37,10 @@ def extract_zip(zip_path, repo_folder):
 
     repo_path = os.path.join(repo_folder, repo_id)
 
-    os.makedirs(repo_path, exist_ok=True)
+    os.makedirs(repo_path, exist_ok=True) 
 
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
-        zip_ref.extractall(repo_path)
+        zip_ref.extractall(repo_path) 
 
     normalize_repository(repo_path)
 

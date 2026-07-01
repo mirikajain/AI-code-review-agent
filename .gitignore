@@ -39,4 +39,5 @@ frontend/dist/
 # Project generated files
 backend/uploads/
 backend/extracted/
-/storage/
+backend/storage/
+storage/

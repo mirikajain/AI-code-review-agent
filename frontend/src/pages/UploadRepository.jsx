@@ -6,34 +6,51 @@ function UploadRepository() {
 
   const handleUpload = async () => {
 
-    if (!file) {
-      alert("Please select a ZIP file.");
-      return;
-    }
-
-    const formData = new FormData();
-
-    formData.append("file", file);
-
     try {
 
-      const response = await fetch("http://127.0.0.1:5000/upload", {
-        method: "POST",
-        body: formData
-      });
+      let response;
+
+      // If GitHub URL is provided
+      if (githubUrl.trim() !== "") {
+
+        response = await fetch("http://127.0.0.1:5000/clone", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            repo_url: githubUrl
+          })
+        });
+
+      }
+
+      // Otherwise upload ZIP
+      else if (file) {
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        response = await fetch("http://127.0.0.1:5000/upload", {
+          method: "POST",
+          body: formData
+        });
+
+      }
+
+      else {
+        alert("Please enter a GitHub URL or select a ZIP file.");
+        return;
+      }
 
       const data = await response.json();
 
+      console.log(data);
       alert(data.message);
 
-      console.log(data);
-
     } catch (error) {
-
       console.error(error);
-
-      alert("Upload Failed");
-
+      alert("Operation failed");
     }
 
   };

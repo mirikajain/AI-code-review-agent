@@ -1,12 +1,11 @@
 from flask import Blueprint, jsonify
+import os
 
 from config import REPO_FOLDER
 from services.repository_scanner import scan_repository
-
-import os
+from services.dependency_parser import parse_dependencies
 
 repository_bp = Blueprint("repository", __name__)
-
 
 @repository_bp.route("/repository/<repo_id>/files", methods=["GET"])
 def list_repository_files(repo_id):
@@ -19,13 +18,40 @@ def list_repository_files(repo_id):
             "message": "Repository not found"
         }), 404
 
-    files = scan_repository(repo_path)
+    scan_result = scan_repository(repo_path)
 
     return jsonify({
         "success": True,
         "repo_id": repo_id,
-        "total_files": len(files),
-        "files": files
+        "total_files": scan_result["total_files"],
+        "code_files": scan_result["code_files"],
+        "metadata_files": scan_result["metadata_files"]
+    })
+
+@repository_bp.route("/repository/<repo_id>/dependencies", methods=["GET"])
+def get_dependencies(repo_id):
+
+    repo_path = os.path.join(REPO_FOLDER, repo_id)
+
+    if not os.path.exists(repo_path):
+        return jsonify({
+            "success": False,
+            "message": "Repository not found"
+        }), 404
+
+    # Step 1: Scan repository
+    scan_result = scan_repository(repo_path)
+
+    # Step 2: Parse dependencies
+    dependencies = parse_dependencies(
+        repo_path,
+        scan_result["metadata_files"]
+    ) 
+
+    return jsonify({
+        "success": True,
+        "repo_id": repo_id,
+        "dependencies": dependencies
     })
 
 from flask import request
@@ -51,7 +77,7 @@ def get_file(repo_id):
         return jsonify({
             "success": False,
             "message": "File not found or not readable"
-        }), 404
+        }), 404 
 
     return jsonify({
         "success": True,
