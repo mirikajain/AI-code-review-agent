@@ -2,28 +2,33 @@ from services.repository_scanner import scan_repository
 from services.dependency_parser import parse_dependencies
 from services.parser_service import parse_repository
 from services.chunk_service import chunk_repository
+from services.embedding_service import generate_embeddings
 
 def analyze_repository(repo_path):
 
-    # Scan repository
-    scan_result = scan_repository(repo_path)
+    scan = scan_repository(repo_path)
 
-    # Parse dependencies
     dependencies = parse_dependencies(
         repo_path,
-        scan_result["metadata_files"]
+        scan["metadata_files"]
     )
 
-    # Parse source code
-    parsed_repository = parse_repository(
+    parsed = parse_repository(
         repo_path,
-        scan_result["code_files"]
+        scan["code_files"]
     )
-    chunks = chunk_repository(parsed_repository)
+
+    chunks = chunk_repository(parsed)
+
+    embedded_chunks = generate_embeddings(chunks)
 
     return {
-        "scan": scan_result,
+
+        "scan": scan,
+
         "dependencies": dependencies,
-        "parsed_repository": parsed_repository,
-        "chunks": chunks
+
+        "parsed_repository": parsed,
+
+        "chunks": embedded_chunks
     }

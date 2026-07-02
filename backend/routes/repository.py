@@ -48,7 +48,7 @@ def get_dependencies(repo_id):
         repo_path,
         scan_result["metadata_files"]
     ) 
-
+    
     return jsonify({
         "success": True,
         "repo_id": repo_id,

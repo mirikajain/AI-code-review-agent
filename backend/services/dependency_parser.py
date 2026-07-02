@@ -49,6 +49,7 @@ def parse_dependencies(repo_path, metadata_files):
                 os.path.join(repo_path, file["path"]),
                 result
             )
+    
 
     return result
 

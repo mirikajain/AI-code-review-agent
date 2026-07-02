@@ -41,3 +41,4 @@ backend/uploads/
 backend/extracted/
 backend/storage/
 storage/
+backend/test/
