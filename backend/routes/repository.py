@@ -4,6 +4,7 @@ import os
 from config import REPO_FOLDER
 from services.repository_scanner import scan_repository
 from services.dependency_parser import parse_dependencies
+from services.review_service import analyze_repository
 
 repository_bp = Blueprint("repository", __name__)
 
@@ -84,3 +85,22 @@ def get_file(repo_id):
         "path": relative_path,
         "content": content
     })
+    
+@repository_bp.route("/repository/<repo_id>/analyze", methods=["GET"])
+def analyze(repo_id):   
+        
+        repo_path = os.path.join(REPO_FOLDER, repo_id)
+
+        if not os.path.exists(repo_path):
+            return jsonify({
+                "success": False,
+                "message": "Repository not found"
+            }), 404
+
+        result = analyze_repository(repo_path)
+
+        return jsonify({
+            "success": True,
+            "repo_id": repo_id,
+            "analysis": result
+        })

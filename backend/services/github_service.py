@@ -1,24 +1,22 @@
-from config import STORAGE_FOLDER
 import os
 from git import Repo
 import uuid
+from config import REPO_FOLDER
 
-REPO_FOLDER = os.path.join(STORAGE_FOLDER, "repos")
-
-os.makedirs(REPO_FOLDER, exist_ok=True)
 
 
 def clone_repository(repo_url):
+    repo_id = str(uuid.uuid4())  # Generate a unique ID for the repository
 
     try:
-
-        # Generate a new ID for every clone
-        repo_id = str(uuid.uuid4())
-
         repo_name = repo_url.rstrip("/").split("/")[-1].replace(".git", "")
 
         repo_path = os.path.join(REPO_FOLDER, repo_id)
 
+       
+       
+
+        # Clone repository
         Repo.clone_from(repo_url, repo_path)
 
         return {
