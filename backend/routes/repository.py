@@ -97,7 +97,7 @@ def analyze(repo_id):
                 "message": "Repository not found"
             }), 404
 
-        result = analyze_repository(repo_path)
+        result = analyze_repository(repo_id,repo_path)
 
         return jsonify({
             "success": True,

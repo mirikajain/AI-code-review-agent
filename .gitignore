@@ -35,6 +35,7 @@ frontend/dist/
 
 # VS Code
 .vscode/
+test.py
 
 # Project generated files
 backend/uploads/

@@ -3,8 +3,9 @@ from services.dependency_parser import parse_dependencies
 from services.parser_service import parse_repository
 from services.chunk_service import chunk_repository
 from services.embedding_service import generate_embeddings
+from services.faiss_service import create_index
 
-def analyze_repository(repo_path):
+def analyze_repository(repo_id,repo_path):
 
     scan = scan_repository(repo_path)
 
@@ -21,6 +22,8 @@ def analyze_repository(repo_path):
     chunks = chunk_repository(parsed)
 
     embedded_chunks = generate_embeddings(chunks)
+   
+    faiss_info   = create_index(embedded_chunks, repo_id)
 
     return {
 
@@ -30,5 +33,7 @@ def analyze_repository(repo_path):
 
         "parsed_repository": parsed,
 
-        "chunks": embedded_chunks
+        "chunks": embedded_chunks,
+
+        "faiss": faiss_info
     }
