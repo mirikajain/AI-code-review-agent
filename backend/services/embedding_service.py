@@ -44,3 +44,14 @@ def generate_embeddings(chunks):
         })
 
     return embedded_chunks
+def generate_query_embedding(query):
+    """
+    Generate embedding for a user query.
+    """
+
+    embedding = model.encode(
+        query,
+        convert_to_numpy=True
+    )
+
+    return embedding

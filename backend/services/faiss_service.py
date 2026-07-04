@@ -100,8 +100,14 @@ def search(index, metadata, query_embedding, k=5):
 
     results = []
 
-    for idx in indices[0]:
+    for distance, idx in zip(distances[0], indices[0]):
 
-        results.append(metadata[idx])
+        if idx == -1:
+            continue
 
-    return results
+        chunk = metadata[idx].copy()
+
+        chunk["score"] = float(distance)
+
+        results.append(chunk)
+        
