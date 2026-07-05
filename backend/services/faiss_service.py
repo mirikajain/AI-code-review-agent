@@ -71,7 +71,7 @@ def create_index(embedded_chunks, repo_id):
 
         "total_chunks": len(metadata)
 
-    }
+    } 
 def load_index(repo_id):
 
     index_path = os.path.join(
@@ -82,7 +82,7 @@ def load_index(repo_id):
     metadata_path = os.path.join(
         INDEX_FOLDER,
         f"{repo_id}.json"
-    )
+    ) 
 
     index = faiss.read_index(index_path)
 
@@ -110,4 +110,5 @@ def search(index, metadata, query_embedding, k=5):
         chunk["score"] = float(distance)
 
         results.append(chunk)
+        return results
         
