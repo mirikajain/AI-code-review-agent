@@ -5,6 +5,7 @@ from config import REPO_FOLDER
 from services.repository_scanner import scan_repository
 from services.dependency_parser import parse_dependencies
 from services.review_service import analyze_repository
+from services.retriever_service import retrieve_chunks
 
 repository_bp = Blueprint("repository", __name__)
 
@@ -97,10 +98,32 @@ def analyze(repo_id):
                 "message": "Repository not found"
             }), 404
 
-        result = analyze_repository(repo_path)
+        result = analyze_repository(repo_id,repo_path)
 
         return jsonify({
             "success": True,
             "repo_id": repo_id,
             "analysis": result
         })
+
+
+@repository_bp.route("/repository/<repo_id>/search", methods=["GET"])
+def search_repository(repo_id):
+
+    query = request.args.get("query")
+
+    if not query:
+        return jsonify({
+            "success": False,
+            "message": "Missing query"
+        }), 400
+
+    results = retrieve_chunks(
+        repo_id,
+        query
+    )
+
+    return jsonify({
+        "success": True,
+        "results": results
+    })
