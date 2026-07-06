@@ -8,52 +8,60 @@ function UploadRepository() {
 
     try {
 
-      let response;
+        let response;
 
-      // If GitHub URL is provided
-      if (githubUrl.trim() !== "") {
+        if (githubUrl.trim() !== "") {
 
-        response = await fetch("http://127.0.0.1:5000/clone", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            repo_url: githubUrl
-          })
-        });
+            response = await fetch("http://127.0.0.1:5000/clone", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    repo_url: githubUrl
+                })
+            });
 
-      }
+        }
 
-      // Otherwise upload ZIP
-      else if (file) {
+        else if (file) {
 
-        const formData = new FormData();
-        formData.append("file", file);
+            const formData = new FormData();
+            formData.append("file", file);
 
-        response = await fetch("http://127.0.0.1:5000/upload", {
-          method: "POST",
-          body: formData
-        });
+            response = await fetch("http://127.0.0.1:5000/upload", {
+                method: "POST",
+                body: formData
+            });
 
-      }
+        }
 
-      else {
-        alert("Please enter a GitHub URL or select a ZIP file.");
-        return;
-      }
+        else {
 
-      const data = await response.json();
+            alert("Please enter a GitHub URL or select a ZIP file.");
+            return;
 
-      console.log(data);
-      alert(data.message);
+        }
 
-    } catch (error) {
-      console.error(error);
-      alert("Operation failed");
+        const data = await response.json();
+
+        console.log(data);
+
+        if (data.repo_id) {
+            localStorage.setItem("repo_id", data.repo_id);
+        }
+
+        alert(data.message);
+
+    }
+    catch (error) {
+
+        console.error(error);
+        alert("Operation failed");
+
     }
 
-  };
+};
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4">

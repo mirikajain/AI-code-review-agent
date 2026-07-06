@@ -1,7 +1,9 @@
 from sentence_transformers import SentenceTransformer
+print("Loading embedding model...")
 
 # Load the model only once when Flask starts
-model = SentenceTransformer("all-MiniLM-L6-v2")
+model = SentenceTransformer("all-MiniLM-L6-v2", local_files_only=True)
+print("loaded")
 
 def generate_embeddings(chunks):
     """

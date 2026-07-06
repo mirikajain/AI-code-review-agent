@@ -15,6 +15,7 @@ def generate_review(query, retrieved_chunks):
     """
     Generate a structured security report using Gemini.
     """
+    print("Entered generate_review")
 
     context = ""
 
@@ -87,6 +88,7 @@ Rules:
     )
 
     response_text = response.text.strip()
+    print("Response received")
 
     # Remove markdown if Gemini adds it
     if response_text.startswith("```json"):

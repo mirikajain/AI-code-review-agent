@@ -62,6 +62,8 @@ def create_index(embedded_chunks, repo_id):
     with open(metadata_path, "w", encoding="utf-8") as f:
 
         json.dump(metadata, f, indent=4)
+    print("Creating index for:", repo_id)
+    print("Index path:", index_path)
 
     return {
 
@@ -110,5 +112,5 @@ def search(index, metadata, query_embedding, k=5):
         chunk["score"] = float(distance)
 
         results.append(chunk)
-        return results
+    return results
         

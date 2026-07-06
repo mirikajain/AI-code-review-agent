@@ -10,14 +10,12 @@ def review():
 
     data = request.get_json()
 
-    repo_id = data.get("repo_id")
-    query = data.get("query")
+    repo_id = data["repo_id"]
+    print("Review repo_id:", repo_id)
 
-    if not repo_id or not query:
-        return jsonify({
-            "error": "repo_id and query are required."
-        }), 400
+    query = data["query"]
 
     result = review_repository(repo_id, query)
+    print(result)
 
     return jsonify(result)
