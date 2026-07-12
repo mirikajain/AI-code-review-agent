@@ -9,6 +9,7 @@ from services.embedding_service import generate_query_embedding
 from services.retriever_service import retrieve_chunks
 from services.llm_service import generate_review
 
+from services.history_service import save_history
 
 def analyze_repository(repo_id,repo_path):
 
@@ -52,28 +53,29 @@ def analyze_repository(repo_id,repo_path):
     }
 
 
-
 def review_repository(repo_id, query):
-    """
-    Retrieve relevant code chunks and generate a review.
-    """
 
-    
-
-    # Retrieve relevant chunks from FAISS
     retrieved_chunks = retrieve_chunks(
         repo_id=repo_id,
         query=query,
         top_k=5
     )
 
-    # Generate review using Gemini
     review = generate_review(
         query=query,
         retrieved_chunks=retrieved_chunks
     )
 
-    return {
+    result = {
         "review": review,
         "retrieved_chunks": retrieved_chunks
     }
+
+    save_history(
+        repo_id=repo_id,
+        repo_path="",
+        query=query,
+        review=result
+    )
+
+    return result

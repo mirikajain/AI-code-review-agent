@@ -5,6 +5,7 @@ from routes.upload import upload_bp
 from routes.github_routes import github_bp  
 from routes.repository import repository_bp
 from routes.review import review_bp
+from routes.history import history_bp
 app = Flask(__name__)
 
 CORS(app)
@@ -13,6 +14,7 @@ app.register_blueprint(upload_bp)
 app.register_blueprint(repository_bp)
 app.register_blueprint(github_bp)
 app.register_blueprint(review_bp)
+app.register_blueprint(history_bp)
 
 @app.route("/")
 def home():

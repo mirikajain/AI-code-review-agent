@@ -42,11 +42,24 @@ Source Code:
 
 Your task:
 
-1. Identify security vulnerabilities.
+1. Identify security vulnerabilities using the OWASP Top 10 (2021) as the primary security standard.
 2. Identify bugs.
 3. Identify performance issues.
 4. Identify code smells.
 5. Recommend fixes.
+6. If a security issue matches an OWASP category, mention the corresponding OWASP ID (e.g., A01: Broken Access Control, A03: Injection).
+
+OWASP Top 10 (2021):
+- A01: Broken Access Control
+- A02: Cryptographic Failures
+- A03: Injection
+- A04: Insecure Design
+- A05: Security Misconfiguration
+- A06: Vulnerable and Outdated Components
+- A07: Identification and Authentication Failures
+- A08: Software and Data Integrity Failures
+- A09: Security Logging and Monitoring Failures
+- A10: Server-Side Request Forgery (SSRF)
 
 Return ONLY valid JSON.
 
@@ -63,6 +76,7 @@ Use exactly this format:
     {{
       "file": "",
       "rule": "",
+      "owasp_category": "",
       "severity": "Critical",
       "description": "",
       "recommendation": ""
@@ -80,6 +94,7 @@ Rules:
   High
   Medium
   Low
+- Leave "owasp_category" empty if the issue is not related to an OWASP Top 10 category.
 """
 
     response = client.models.generate_content(

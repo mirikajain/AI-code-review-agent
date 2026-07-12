@@ -30,6 +30,10 @@ def create_index(embedded_chunks, repo_id):
         f"{repo_id}.index"
     )
 
+
+
+    os.makedirs(INDEX_FOLDER, exist_ok=True)
+
     faiss.write_index(index, index_path)
 
     metadata = []
