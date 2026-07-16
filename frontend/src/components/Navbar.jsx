@@ -15,9 +15,13 @@ function Navbar() {
           Reports
         </Link>
 
-        <Link to="/history" className="hover:text-gray-200">
-          History
-        </Link>
+          <Link to="/history" className="hover:text-gray-200">
+            History
+          </Link>
+          <Link to="/graph" className="hover:text-gray-200">
+            Graph
+          </Link>
+
       </div>
     </nav>
   );

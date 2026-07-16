@@ -1,10 +1,15 @@
+
 from services.repository_scanner import scan_repository
 from services.dependency_parser import parse_dependencies
 from services.parser_service import parse_repository
 from services.chunk_service import chunk_repository
 from services.embedding_service import generate_embeddings
 from services.faiss_service import create_index
-
+from services.neo4j_service import (
+    clear_repository,
+    store_repository_graph,
+    create_issue
+)
 from services.embedding_service import generate_query_embedding
 from services.retriever_service import retrieve_chunks
 from services.llm_service import generate_review
@@ -23,6 +28,16 @@ def analyze_repository(repo_id,repo_path):
     parsed = parse_repository(repo_path, scan["code_files"])
 
     print("Total parsed files:", len(parsed))
+    print("Creating Neo4j Knowledge Graph...")
+
+    clear_repository(repo_id)
+
+    store_repository_graph(
+    repo_id,
+    parsed
+    )
+
+    print("Neo4j graph created successfully.")
 
     print("Chunking...")
     chunks = chunk_repository(parsed)
@@ -65,6 +80,26 @@ def review_repository(repo_id, query):
         query=query,
         retrieved_chunks=retrieved_chunks
     )
+   
+   # Store review issues in Neo4j
+    if "issues" in review:
+
+        for issue in review["issues"]:
+
+            create_issue(
+
+            file_path=issue.get("file", ""),
+
+            rule=issue.get("rule", ""),
+
+            severity=issue.get("severity", ""),
+
+            description=issue.get("description", ""),
+
+            recommendation=issue.get("recommendation", ""),
+
+            owasp=issue.get("owasp_category", "")
+        )
 
     result = {
         "review": review,

@@ -1,6 +1,10 @@
 from flask import Blueprint, jsonify
 import os
 
+from services.neo4j_service import (
+    get_repository_graph,
+    get_node_details
+)
 from config import REPO_FOLDER
 from services.repository_scanner import scan_repository
 from services.dependency_parser import parse_dependencies
@@ -126,4 +130,33 @@ def search_repository(repo_id):
     return jsonify({
         "success": True,
         "results": results
+    })
+
+@repository_bp.route("/repository/<repo_id>/graph", methods=["GET"])
+def repository_graph(repo_id):
+
+    graph = get_repository_graph(repo_id)
+
+    return jsonify({
+        "success": True,
+        "graph": graph
+    })
+
+@repository_bp.route("/node/<node_id>", methods=["GET"])
+def node_details(node_id):
+
+    details = get_node_details(node_id)
+
+    if details is None:
+
+        return jsonify({
+            "success": False
+        }),404
+
+    return jsonify({
+
+        "success":True,
+
+        "details":details
+
     })

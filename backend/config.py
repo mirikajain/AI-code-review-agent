@@ -24,3 +24,12 @@ INDEX_FOLDER = os.path.join(STORAGE_FOLDER, "indexes")
 HISTORY_FOLDER = os.path.join(STORAGE_FOLDER, "history")
 
 os.makedirs(HISTORY_FOLDER, exist_ok=True)
+
+
+# Neo4j Configuration
+
+NEO4J_URI = "neo4j://127.0.0.1:7687"
+
+NEO4J_USER = "neo4j"
+
+NEO4J_PASSWORD = "12345678"
