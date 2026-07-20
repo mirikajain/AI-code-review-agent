@@ -1,7 +1,8 @@
-from math import ceil
 
 
-CHUNK_SIZE = 100      # lines
+
+CHUNK_SIZE = 100   
+CHUNK_OVERLAP = 20   # lines
 
 
 def chunk_repository(parsed_repository):
@@ -19,20 +20,23 @@ def chunk_repository(parsed_repository):
 
     return chunks
 
-
 def chunk_file(file_data):
+    """
+    Split a file into overlapping chunks.
+    """
 
     content = file_data["content"]
-
     lines = content.splitlines()
 
     chunks = []
 
-    total_chunks = ceil(len(lines) / CHUNK_SIZE)
+    if not lines:
+        return chunks
 
-    for i in range(total_chunks):
+    step = CHUNK_SIZE - CHUNK_OVERLAP
+    chunk_id = 1
 
-        start = i * CHUNK_SIZE
+    for start in range(0, len(lines), step):
 
         end = start + CHUNK_SIZE
 
@@ -46,7 +50,7 @@ def chunk_file(file_data):
 
             "classes": file_data["classes"],
 
-            "chunk_id": i + 1,
+            "chunk_id": chunk_id,
 
             "start_line": start + 1,
 
@@ -55,5 +59,11 @@ def chunk_file(file_data):
             "content": chunk_text
 
         })
+
+        chunk_id += 1
+
+        # Stop when the last chunk reaches the end of the file
+        if end >= len(lines):
+            break
 
     return chunks
