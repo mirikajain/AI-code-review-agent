@@ -1,6 +1,8 @@
 import os
 import xml.etree.ElementTree as ET
 import json
+import re
+
 
 DEPENDENCY_FILES = {
     ".csproj",
@@ -31,7 +33,8 @@ def parse_dependencies(repo_path, metadata_files):
         "nullable": None,
         "implicit_usings": None,
         "lang_version": None,
-        "global_json": None
+        "global_json": None,
+        "source_dependencies": []
     }
 
     for file in metadata_files:
@@ -49,7 +52,22 @@ def parse_dependencies(repo_path, metadata_files):
                 os.path.join(repo_path, file["path"]),
                 result
             )
-    
+    for root, _, files in os.walk(repo_path):
+
+        for filename in files:
+
+            if filename.endswith(".cs"):
+
+                full_path = os.path.join(root, filename)
+
+                dependency = parse_source_dependencies(
+                    repo_path,
+                    full_path
+                    )
+
+                result["source_dependencies"].append(
+                    dependency
+                    )
 
     return result
 
@@ -138,3 +156,45 @@ def parse_global_json(file_path, result):
 
     except Exception:
         pass
+
+
+def parse_source_dependencies(repo_path, file_path):
+    """
+    Parse C# source file dependencies.
+    """
+
+    try:
+
+        with open(
+            file_path,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            content = f.read()
+
+    except Exception:
+
+        return {
+            "path": "",
+            "imports": []
+        }
+
+    imports = re.findall(
+
+        r'using\s+([\w\.]+)\s*;',
+
+        content
+
+    )
+
+    return {
+
+        "path": os.path.relpath(
+            file_path,
+            repo_path
+        ),
+
+        "imports": imports
+
+    }

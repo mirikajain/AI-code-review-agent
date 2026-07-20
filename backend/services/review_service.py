@@ -7,7 +7,9 @@ from services.embedding_service import generate_embeddings
 from services.faiss_service import create_index
 from services.neo4j_service import (
     clear_repository,
+    store_dependency_graph,
     store_repository_graph,
+    store_class_relationships,
     create_issue
 )
 from services.embedding_service import generate_query_embedding
@@ -31,11 +33,21 @@ def analyze_repository(repo_id,repo_path):
     print("Creating Neo4j Knowledge Graph...")
 
     clear_repository(repo_id)
+    dependencies = parse_dependencies(
+    repo_path,
+    scan["metadata_files"]
+    )
+    print(dependencies["source_dependencies"][:3])
 
     store_repository_graph(
     repo_id,
     parsed
     )
+    store_dependency_graph(
+    repo_id,
+    dependencies
+    )
+    store_class_relationships(parsed)
 
     print("Neo4j graph created successfully.")
 

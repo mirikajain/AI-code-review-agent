@@ -139,6 +139,153 @@ def create_method(file_path, method_name):
         "method": method_name
     })
 
+def create_inheritance(child, parent):
+    """
+    Create inheritance relationship.
+    """
+
+    query = """
+    MERGE (c:Class {name:$child})
+    MERGE (p:Class {name:$parent})
+
+    MERGE (c)-[:INHERITS]->(p)
+    """
+
+    execute_query(
+        query,
+        {
+            "child": child,
+            "parent": parent
+        }
+    )
+
+def create_interface_implementation(class_name, interface_name):
+    """
+    Create implementation relationship.
+    """
+
+    query = """
+    MERGE (c:Class {name:$class})
+    MERGE (i:Interface {name:$interface})
+
+    MERGE (c)-[:IMPLEMENTS]->(i)
+    """
+
+    execute_query(
+        query,
+        {
+            "class": class_name,
+            "interface": interface_name
+        }
+    )
+
+def create_class_dependency(class_name, dependency):
+    """
+    Create dependency relationship.
+    """
+
+    query = """
+    MERGE (c1:Class {name:$class})
+    MERGE (c2:Class {name:$dependency})
+
+    MERGE (c1)-[:DEPENDS_ON]->(c2)
+    """
+
+    execute_query(
+        query,
+        {
+            "class": class_name,
+            "dependency": dependency
+        }
+    )
+
+def create_library(name):
+    """
+    Create a library/package node.
+    """
+
+    query = """
+    MERGE (l:Library {
+        name:$name
+    })
+    """
+
+    execute_query(query, {
+
+        "name": name
+
+    })
+
+def create_project(repo_id, project_name):
+    """
+    Create a project node.
+    """
+
+    query = """
+    MATCH (r:Repository {id:$repo_id})
+
+    MERGE (p:Project {
+        name:$project
+    })
+
+    MERGE (r)-[:CONTAINS]->(p)
+    """
+
+    execute_query(query, {
+
+        "repo_id": repo_id,
+
+        "project": project_name
+
+    })
+
+def create_library_dependency(file_path, library_name):
+    """
+    Connect File -> Library.
+    """
+
+    query = """
+    MATCH (f:File {path:$file})
+
+    MERGE (l:Library {
+        name:$library
+    })
+
+    MERGE (f)-[:USES]->(l)
+    """
+
+    execute_query(query, {
+
+        "file": file_path,
+
+        "library": library_name
+
+    })
+
+def create_project_dependency(project_name, reference):
+    """
+    Connect Project -> Project.
+    """
+
+    query = """
+    MERGE (p1:Project {
+        name:$project
+    })
+
+    MERGE (p2:Project {
+        name:$reference
+    })
+
+    MERGE (p1)-[:DEPENDS_ON]->(p2)
+    """
+
+    execute_query(query, {
+
+        "project": project_name,
+
+        "reference": reference
+
+    })
 
 def store_repository_graph(repo_id, parsed_files):
     """
@@ -383,3 +530,101 @@ def get_node_details(node_id):
             "children": result["children"]
 
         }    
+    
+def store_dependency_graph(repo_id, dependencies):
+    """
+    Store dependency graph in Neo4j.
+    """
+
+    # -----------------------------------
+    # Store project nodes
+    # -----------------------------------
+
+    project_name = "MainProject"
+
+    create_project(
+        repo_id,
+        project_name
+    )
+
+    # -----------------------------------
+    # Project References
+    # -----------------------------------
+
+    for reference in dependencies["project_references"]:
+
+        create_project_dependency(
+            project_name,
+            reference
+        )
+
+    # -----------------------------------
+    # NuGet Packages
+    # -----------------------------------
+
+    for package in dependencies["packages"]:
+
+        create_library(
+
+            package["name"]
+
+        )
+
+    # -----------------------------------
+    # Source Dependencies
+    # -----------------------------------
+
+    for source in dependencies["source_dependencies"]:
+
+        for library in source["imports"]:
+
+            create_library_dependency(
+
+                source["path"],
+
+                library
+
+            )
+
+def store_class_relationships(parsed_files):
+    """
+    Store inheritance, interfaces and dependencies.
+    """
+
+    for file in parsed_files:
+
+        if not file["classes"]:
+            continue
+
+        current_class = file["classes"][0]
+
+        # -----------------------
+        # Inheritance / Interfaces
+        # -----------------------
+
+        for relation in file["relationships"]:
+
+            for parent in relation["inherits"]:
+
+                create_inheritance(
+                    relation["class"],
+                    parent
+                )
+
+            for interface in relation["implements"]:
+
+                create_interface_implementation(
+                    relation["class"],
+                    interface
+                )
+
+        # -----------------------
+        # Object dependencies
+        # -----------------------
+
+        for dependency in file["object_dependencies"]:
+
+            create_class_dependency(
+                current_class,
+                dependency
+            )

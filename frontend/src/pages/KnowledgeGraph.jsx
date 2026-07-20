@@ -67,6 +67,12 @@ export default function KnowledgeGraph() {
             case "Issue":
                 return "#dc2626";
 
+            case "Library":
+                return "#0891b2";      // Cyan
+
+            case "Project":
+                return "#db2777";
+
             default:
                 return "#6b7280";
         }
@@ -109,10 +115,24 @@ export default function KnowledgeGraph() {
                         nodeRelSize={6}
 
                         nodeVal={(node) => {
-                            if (node.type === "Repository") return 20;
-                            if (node.type === "File") return 8;
-                            if (node.type === "Issue") return 6;
+
+                            if (node.type === "Repository")
+                                return 20;
+
+                            if (node.type === "Project")
+                                return 14;
+
+                            if (node.type === "File")
+                                return 8;
+
+                            if (node.type === "Library")
+                                return 7;
+
+                            if (node.type === "Issue")
+                                return 6;
+
                             return 4;
+
                         }}
 
                         linkColor={() => "#cfcfcf"}
@@ -142,7 +162,9 @@ export default function KnowledgeGraph() {
                             let radius = 4;
 
                             if (node.type === "Repository") radius = 12;
+                            else if (node.type === "Project") radius = 10;
                             else if (node.type === "File") radius = 7;
+                            else if (node.type === "Library") radius = 6;
                             else if (node.type === "Issue") radius = 6;
 
                             ctx.beginPath();
@@ -266,6 +288,7 @@ export default function KnowledgeGraph() {
                                                 child.properties.name ||
 
                                                 child.properties.path ||
+                                                child.properties.id ||
 
                                                 child.properties.rule ||
 
@@ -321,6 +344,15 @@ export default function KnowledgeGraph() {
                         <div className="flex items-center gap-2">
                             <div className="w-4 h-4 rounded-full bg-red-600"></div>
                             Issue
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 rounded-full bg-cyan-600"></div>
+                            Library
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 rounded-full bg-pink-600"></div>
+                            Project
                         </div>
 
                     </div>
