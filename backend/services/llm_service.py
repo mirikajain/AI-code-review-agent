@@ -3,7 +3,8 @@ import json
 
 from dotenv import load_dotenv
 from google import genai
-
+from streamlit import form
+from rules.rule_service import load_custom_rules
 load_dotenv()
 
 client = genai.Client(
@@ -25,9 +26,24 @@ File: {chunk['file']}
 Lines: {chunk['start_line']} - {chunk['end_line']}
 
 {chunk['content']}
-
----------------------------------------------------------
 """
+
+    # After collecting code context, load any custom rules and append them
+    custom_rules = load_custom_rules()
+
+    rule_text = ""
+
+    if custom_rules:
+        rule_text = "\n\nCustom Organization Rules:\n"
+        for rule in custom_rules:
+            rule_text += (
+                f"- [{rule['id']}] "
+                f"{rule['title']} : "
+                f"{rule['description']} "
+                f"(Severity: {rule['severity']})\n"
+            )
+
+    context += rule_text
 
     prompt = f"""
 You are an expert software security reviewer.
@@ -39,7 +55,7 @@ User Request:
 
 Source Code:
 {context}
-
+{rule_text}
 Your task:
 
 1. Identify security vulnerabilities using the OWASP Top 10 (2021) as the primary security standard.
@@ -48,7 +64,7 @@ Your task:
 4. Identify code smells.
 5. Recommend fixes.
 6. If a security issue matches an OWASP category, mention the corresponding OWASP ID (e.g., A01: Broken Access Control, A03: Injection).
-
+7. Follow ALL custom organization rules provided in the context.
 OWASP Top 10 (2021):
 - A01: Broken Access Control
 - A02: Cryptographic Failures

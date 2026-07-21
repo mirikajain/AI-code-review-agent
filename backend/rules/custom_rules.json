@@ -1,0 +1,20 @@
+[
+  {
+    "id": "CR001",
+    "title": "Avoid Console.WriteLine",
+    "description": "Do not use Console.WriteLine in production code.",
+    "severity": "Low"
+  },
+  {
+    "id": "CR002",
+    "title": "Repository naming",
+    "description": "Repository classes must end with 'Repository'.",
+    "severity": "Medium"
+  },
+  {
+    "id": "CR003",
+    "title": "No TODO comments",
+    "description": "TODO comments are not allowed in committed code.",
+    "severity": "Low"
+  }
+]
